@@ -118,6 +118,7 @@ func (h *MessageHandler) deleteAction(msg *Message) *Response {
 	r := new(Response)
 
 	if h.dataBase.Has(msg.Key) {
+		h.dataBase.Delete(msg.Key)
 		r.Message = "Success"
 		return r
 	}
