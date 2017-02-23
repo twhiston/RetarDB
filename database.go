@@ -5,8 +5,8 @@ import (
 )
 
 type RDataBase struct {
-	backupFile      string
-	dataBase map[string]string
+	backupFile string
+	dataBase   map[string]string
 }
 
 func NewRDataBase(backupFile string) *RDataBase {

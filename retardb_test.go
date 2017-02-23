@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net"
 	"testing"
 )
 
@@ -33,6 +34,23 @@ func TestDatabaseCRUD(t *testing.T) {
 	}
 }
 
-func TestReadJson(t *testing.T) {
-	_ = CreateConfig(CONFIG_FILENAME)
+func TestFunctional(t *testing.T) {
+	config := createTestConfig()
+
+	dataBase := NewRDataBase(config.BackupFile)
+	clientHandler := NewClientHandler(dataBase)
+	server := NewRServer(config.ListenHost, clientHandler)
+
+	go server.Run()
+
+}
+
+func createTestConfig() *Config {
+	c := new(Config)
+
+	c.ListenHost = "127.0.0.1:8003"
+	c.BackupFile = "backup.json"
+	c.BackupRate = 30
+
+	return c
 }

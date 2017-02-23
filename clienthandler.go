@@ -1,29 +1,42 @@
 package main
 
 import (
-	"net"
-	"io"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net"
 )
 
-type PersistentClientHandler struct {
-	dataBase *RDataBase
+type SimpleClientHandler struct {
+	dataBase       *RDataBase
+	messageHandler *MessageHandler
 }
 
-func NewClientHandler(dataBase *RDataBase) *PersistentClientHandler {
-	handler := new(PersistentClientHandler)
+func NewClientHandler(dataBase *RDataBase) *SimpleClientHandler {
+	handler := new(SimpleClientHandler)
+
 	handler.dataBase = dataBase
+	handler.messageHandler = NewMessageHandler(dataBase)
+
 	return handler
 }
 
-func (h *PersistentClientHandler) handleClient(conn net.Conn) {
-	for {
-		rawMessage, _ := h.readClientMessage(conn)
-		fmt.Println(string(rawMessage))
+func (h *SimpleClientHandler) handleClient(conn net.Conn) {
+	rawMessage, err := h.readClientMessage(conn)
+
+	if nil != err {
+		fmt.Println("close")
+		conn.Close()
 	}
+
+	response := h.messageHandler.HandleMessage(rawMessage)
+	jsonResponse, _ := json.Marshal(response)
+
+	conn.Write(jsonResponse)
+	conn.Close()
 }
 
-func (h *PersistentClientHandler) readClientMessage(conn net.Conn) ([]byte, error) {
+func (h *SimpleClientHandler) readClientMessage(conn net.Conn) ([]byte, error) {
 	tmp := make([]byte, 128)
 	buf := make([]byte, 0, 2)
 

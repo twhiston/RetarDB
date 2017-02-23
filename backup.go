@@ -1,7 +1,7 @@
 package main
 
 type RBackupHandler struct {
-	rate int
+	rate     int
 	database *RDataBase
 }
 
