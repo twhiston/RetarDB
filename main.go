@@ -9,7 +9,7 @@ func main() {
 
 	dataBase := NewRDataBase(config.BackupFile)
 	backupHandler := NewRBackupHandler(dataBase, config.BackupRate)
-	handler := NewClientHandler(dataBase)
+	handler := NewRClientHandlerTCP(dataBase)
 	server := NewRServer(config.ListenHost, handler)
 
 	go backupHandler.StartPeriodicBackup()

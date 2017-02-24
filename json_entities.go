@@ -15,4 +15,5 @@ type Config struct {
 	BackupRate int    `json:"backup_rate"`
 	BackupFile string `json:"backup_file`
 	ListenHost string `json:"listen_host"`
+	ServerType string `json:"server_type"`
 }

@@ -21,6 +21,7 @@ func CreateConfig(fileName string) *Config {
 		c.BackupRate = 30
 		c.BackupFile = "backup.json"
 		c.ListenHost = "127.0.0.1:8003"
+		c.ServerType = "tcp"
 	}
 
 	return c

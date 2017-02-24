@@ -12,7 +12,7 @@ type RClientHandlerTCP struct {
 	messageHandler *RMessageHandler
 }
 
-func NewClientHandler(dataBase *RDataBase) *RClientHandlerTCP {
+func NewRClientHandlerTCP(dataBase *RDataBase) *RClientHandlerTCP {
 	handler := new(RClientHandlerTCP)
 
 	handler.dataBase = dataBase
