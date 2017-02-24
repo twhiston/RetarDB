@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"testing"
 )
@@ -20,7 +21,7 @@ func TestDatabaseCRUD(t *testing.T) {
 
 	data, err := database.Read("anotherMissingKey")
 
-	if nil != err {
+	if nil == err {
 		t.Error("Reading a missing key should return an error")
 	}
 	if data != "" {
@@ -43,6 +44,13 @@ func TestFunctional(t *testing.T) {
 
 	go server.Run()
 
+	client, err := net.Dial("tcp", config.ListenHost)
+
+	if err != nil {
+		t.Error("Can't connect to server")
+	}
+
+	fmt.Fprintf(client, `{"command": "write", "key": "value", "value": "test"}`)
 }
 
 func createTestConfig() *Config {

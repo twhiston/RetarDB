@@ -4,10 +4,6 @@ import (
 	"net"
 )
 
-type ClientHandler interface {
-	handleClient(net.Conn)
-}
-
 type RServer struct {
 	host          string
 	clientHandler ClientHandler

@@ -10,28 +10,17 @@ const MESSAGEKEY_WRITE = "write"
 const MESSAGEKEY_DELETE = "delete"
 const MESSAGEKEY_HAS = "has"
 
-type Message struct {
-	Command string `json:"command"`
-	Key     string `json:"key"`
-	Value   string `json:"value"`
-}
-
-type Response struct {
-	Error   string `json:"error"`
-	Message string `json:"message"`
-}
-
-type MessageHandler struct {
+type RMessageHandler struct {
 	dataBase *RDataBase
 }
 
-func NewMessageHandler(dataBase *RDataBase) *MessageHandler {
-	h := new(MessageHandler)
+func NewRMessageHandler(dataBase *RDataBase) *RMessageHandler {
+	h := new(RMessageHandler)
 	h.dataBase = dataBase
 	return h
 }
 
-func (h *MessageHandler) HandleMessage(rawMessage []byte) *Response {
+func (h *RMessageHandler) HandleMessage(rawMessage []byte) *Response {
 	message, err := h.createMessage(rawMessage)
 
 	if nil != err {
@@ -41,7 +30,7 @@ func (h *MessageHandler) HandleMessage(rawMessage []byte) *Response {
 	return h.createMessageResponse(message)
 }
 
-func (h *MessageHandler) createMessage(rawMessage []byte) (*Message, error) {
+func (h *RMessageHandler) createMessage(rawMessage []byte) (*Message, error) {
 	m := new(Message)
 
 	jsonError := json.Unmarshal(rawMessage, &m)
@@ -52,13 +41,13 @@ func (h *MessageHandler) createMessage(rawMessage []byte) (*Message, error) {
 	return m, nil
 }
 
-func (h *MessageHandler) createErrorResponse(err error) *Response {
+func (h *RMessageHandler) createErrorResponse(err error) *Response {
 	m := new(Response)
 	m.Error = err.Error()
 	return m
 }
 
-func (h *MessageHandler) createMessageResponse(message *Message) *Response {
+func (h *RMessageHandler) createMessageResponse(message *Message) *Response {
 	switch message.Command {
 
 	case MESSAGEKEY_READ:
@@ -77,7 +66,7 @@ func (h *MessageHandler) createMessageResponse(message *Message) *Response {
 	return r
 }
 
-func (h *MessageHandler) createAction(msg *Message) *Response {
+func (h *RMessageHandler) createAction(msg *Message) *Response {
 	r := new(Response)
 
 	if h.dataBase.Has(msg.Key) {
@@ -89,7 +78,7 @@ func (h *MessageHandler) createAction(msg *Message) *Response {
 	return r
 }
 
-func (h *MessageHandler) writeAction(msg *Message) *Response {
+func (h *RMessageHandler) writeAction(msg *Message) *Response {
 	r := new(Response)
 
 	if len(msg.Key) > 0 {
@@ -102,7 +91,7 @@ func (h *MessageHandler) writeAction(msg *Message) *Response {
 	return r
 }
 
-func (h *MessageHandler) hasAction(msg *Message) *Response {
+func (h *RMessageHandler) hasAction(msg *Message) *Response {
 	r := new(Response)
 
 	r.Message = "no"
@@ -114,7 +103,7 @@ func (h *MessageHandler) hasAction(msg *Message) *Response {
 	return r
 }
 
-func (h *MessageHandler) deleteAction(msg *Message) *Response {
+func (h *RMessageHandler) deleteAction(msg *Message) *Response {
 	r := new(Response)
 
 	if h.dataBase.Has(msg.Key) {

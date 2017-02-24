@@ -6,19 +6,21 @@ import (
 	"os"
 )
 
-type Config struct {
-	BackupRate int    `json:"backup_rate"`
-	BackupFile string `json:"backup_file`
-	ListenHost string `json:"listen_host"`
-}
-
 func CreateConfig(fileName string) *Config {
 	c := new(Config)
 
-	jsonError := json.Unmarshal(readFile(fileName), c)
+	fileContent := readFile(fileName)
 
-	if nil != jsonError {
-		ErrorExit("Error unmarshalling json: "+jsonError.Error(), ERR_CONFIG_UNMARSHAL)
+	if len(fileContent) > 0 {
+		jsonError := json.Unmarshal(fileContent, c)
+
+		if nil != jsonError {
+			ErrorExit("Error unmarshalling json: "+jsonError.Error(), ERR_CONFIG_UNMARSHAL)
+		}
+	} else {
+		c.BackupRate = 30
+		c.BackupFile = "backup.json"
+		c.ListenHost = "127.0.0.1:8003"
 	}
 
 	return c
@@ -29,13 +31,13 @@ func readFile(fileName string) []byte {
 
 	_, err := os.Stat(fileName)
 	if nil != err {
-		ErrorExit("Error reading from file: "+fileName, ERR_CONFIG_NOTFOUND)
+		Notice("No config file found. Using default settings")
 	}
 
 	content, readError := ioutil.ReadFile(fileName)
 
 	if nil != readError {
-		ErrorExit("Error reading from file: "+fileName, ERR_CONFIG_READ)
+		Error("Config file exists but is not readable. Using default settings")
 	}
 
 	return content

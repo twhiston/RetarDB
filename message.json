@@ -1,0 +1,5 @@
+{
+  "command": "read",
+  "key": "hi",
+  "value": "test"
+}

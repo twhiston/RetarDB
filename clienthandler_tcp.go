@@ -7,21 +7,23 @@ import (
 	"net"
 )
 
-type SimpleClientHandler struct {
+type RClientHandlerTCP struct {
 	dataBase       *RDataBase
-	messageHandler *MessageHandler
+	messageHandler *RMessageHandler
 }
 
-func NewClientHandler(dataBase *RDataBase) *SimpleClientHandler {
-	handler := new(SimpleClientHandler)
+func NewClientHandler(dataBase *RDataBase) *RClientHandlerTCP {
+	handler := new(RClientHandlerTCP)
 
 	handler.dataBase = dataBase
-	handler.messageHandler = NewMessageHandler(dataBase)
+	handler.messageHandler = NewRMessageHandler(dataBase)
 
 	return handler
 }
 
-func (h *SimpleClientHandler) handleClient(conn net.Conn) {
+func (h *RClientHandlerTCP) handleClient(client interface{}) {
+	conn := client.(net.Conn)
+
 	rawMessage, err := h.readClientMessage(conn)
 
 	if nil != err {
@@ -36,7 +38,7 @@ func (h *SimpleClientHandler) handleClient(conn net.Conn) {
 	conn.Close()
 }
 
-func (h *SimpleClientHandler) readClientMessage(conn net.Conn) ([]byte, error) {
+func (h *RClientHandlerTCP) readClientMessage(conn net.Conn) ([]byte, error) {
 	tmp := make([]byte, 128)
 	buf := make([]byte, 0, 2)
 

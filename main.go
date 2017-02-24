@@ -1,5 +1,7 @@
 package main
 
+import ()
+
 const CONFIG_FILENAME = "retard.json"
 
 func main() {
