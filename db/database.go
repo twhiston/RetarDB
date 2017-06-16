@@ -24,28 +24,26 @@ func NewRDataBase(backupFile string) *RDataBase {
 	return r
 }
 
+//SetPrependSeparator sets the string that will be used for key explosion. Defaults to "."
 func (r *RDataBase) SetPrependSeparator(separator string) {
 	r.prependSeparator = separator
 }
 
+//TODO - refactor
 func (r *RDataBase) Write(key string, value string) {
 	r.dataBase[key] = value
 }
 
+//Read - public facing reader which primes read(key string, nextKeys []string, database dataBase)
 func (r *RDataBase) Read(key string) (string, error) {
-
 	//Explode the key by the delimiter
 	stringSlice := strings.Split(key, r.prependSeparator)
 	nextKey, nextKeys := r.keyShift(stringSlice)
 	output, err := r.read(nextKey, nextKeys, r.dataBase)
-	if err != nil {
-		return "", err
-	}
-
-	return output, nil
+	return output, err
 }
 
-// read recursive function that looks through a map[string]interface{} to try to resolve it to map[string]string types so a value can be returned
+//read internal recursive function that looks through a map[string]interface{} to try to resolve it to map[string]string types so a value can be returned
 //TODO - currently if the last part of a tested key exists, but is a map and not a string endpoint it just returns an error, it would be better to have some more specific action so you could respond to it
 func (r *RDataBase) read(key string, nextKeys []string, database dataBase) (string, error) {
 
@@ -80,13 +78,15 @@ func (r *RDataBase) read(key string, nextKeys []string, database dataBase) (stri
 
 func (r *RDataBase) keyShift(slice []string) (string, []string) {
 	if len(slice) == 0 {
-		log.Println("null key shift")
 		return "", slice
 	}
 	return slice[0], slice[1:]
 }
 
 //WriteNested expects
+//		map[string]string OR map[string]interface{}
+//
+//All interface types must eventually resolve to map[string]string
 func (r *RDataBase) WriteNested(values map[string]interface{}) {
 	for k, val := range values {
 		switch v := val.(type) {
