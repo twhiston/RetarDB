@@ -1,4 +1,4 @@
-package main
+package db
 
 type Message struct {
 	Command string `json:"command"`

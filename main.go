@@ -1,16 +1,18 @@
 package main
 
-import ()
+import (
+	"github.com/twhiston/RetarDB/db"
+)
 
 const CONFIG_FILENAME = "retard.json"
 
 func main() {
-	config := CreateConfig(CONFIG_FILENAME)
+	config := db.CreateConfig(CONFIG_FILENAME)
 
-	dataBase := NewRDataBase(config.BackupFile)
-	backupHandler := NewRBackupHandler(dataBase, config.BackupRate)
-	handler := NewRClientHandlerTCP(dataBase)
-	server := NewRServer(config.ListenHost, handler)
+	dataBase := db.NewRDataBase(config.BackupFile)
+	backupHandler := db.NewRBackupHandler(dataBase, config.BackupRate)
+	handler := db.NewRClientHandlerTCP(dataBase)
+	server := db.NewRServer(config.ListenHost, handler)
 
 	go backupHandler.StartPeriodicBackup()
 
